@@ -1,0 +1,52 @@
+/* styles.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(to bottom, #87CEEB, #FFFFFF); /* Himmelblå gradient */
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: transparent; /* Canvas er gennemsigtig for at vise baggrunden */
+}
+
+#score {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: #0dff00;
+    font-family: Arial, sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3em;
+    color: red;
+    font-family: Arial, sans-serif;
+    display: none; /* Skjult som standard */
+    text-shadow: 2px 2px 5px black;
+}
+.hidden {
+    display: none;
+}
+
+
+.hidden {
+    display: none;
+}
