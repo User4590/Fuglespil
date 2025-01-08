@@ -147,9 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Afslut spillet
     function endGame() {
-        gameRunning = false;
-        document.getElementById("game-over").classList.remove("hidden");
+        gameRunning = false; // Stop spillet
+        document.getElementById("game-over").classList.remove("hidden"); // Vis Game Over tekst
     }
+    
 
     // Styring
     document.addEventListener("keydown", (e) => {
@@ -187,4 +188,103 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         obstacles.push(obstacle);
     }
+
+// Baggrundsbillede og variabler til animation
+const backgroundImage = new Image();
+backgroundImage.src = 'background.jpg';
+
+let backgroundX = 0; // Startposition for baggrunden
+let backgroundSpeed = 1; // Hastigheden på baggrundens bevægelse
+// Tegn og flyt baggrunden
+function drawBackground() {
+    // Tegn baggrunden to gange for at gentage den horisontalt
+    ctx.drawImage(backgroundImage, backgroundX, 0, canvas.width, canvas.height);
+    ctx.drawImage(backgroundImage, backgroundX + canvas.width, 0, canvas.width, canvas.height);
+
+    // Flyt baggrundens position
+    backgroundX -= backgroundSpeed;
+
+    // Hvis baggrunden er scrollet ud af skærmen, nulstil positionen
+    if (backgroundX <= -canvas.width) {
+        backgroundX = 0;
+    }
+}
+function updateGame() {
+    if (!gameRunning) return;
+
+    // Ryd canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Tegn baggrunden
+    drawBackground();
+
+    // Tegn fugleflokken
+    drawBirds();
+    function drawBirds() {
+        if (!gameRunning) return; // Stop med at tegne fuglene, hvis spillet er slut
+        for (let i = 0; i < birds; i++) {
+            ctx.drawImage(birdImage, flock.x - i * 10, flock.y + i * 5, flock.width, flock.height);
+        }
+    }
+    
+    // Flyt fugleflokken
+    flock.y += flock.dy;
+
+    // Tegn og opdater sten og faldende objekter
+    obstacles.forEach((obstacle, index) => {
+        obstacle.x -= obstacle.speed;
+
+        if (
+            flock.x < obstacle.x + obstacle.width &&
+            flock.x + flock.width > obstacle.x &&
+            flock.y < obstacle.y + obstacle.height &&
+            flock.y + flock.height > obstacle.y
+        ) {
+            birds--;
+            obstacles.splice(index, 1);
+            if (birds <= 0) endGame();
+        }
+
+        if (obstacle.x + obstacle.width < 0) {
+            obstacles.splice(index, 1);
+            score++;
+        }
+    });
+
+    drawObstacles();
+
+    fallingObjects.forEach((object, index) => {
+        object.y += object.speed;
+
+        if (
+            flock.x < object.x + object.width &&
+            flock.x + flock.width > object.x &&
+            flock.y < object.y + object.height &&
+            flock.y + flock.height > object.y
+        ) {
+            birds--;
+            fallingObjects.splice(index, 1);
+            if (birds <= 0) endGame();
+        }
+
+        if (object.y > canvas.height) {
+            fallingObjects.splice(index, 1);
+        }
+    });
+
+    drawFallingObjects();
+
+    // Opdater score og fugle
+    document.getElementById("score").textContent = `Score: ${score} | Birds: ${birds}`;
+
+    // Tilføj nye forhindringer
+    if (Math.random() < 0.02) createObstacle();
+
+    // Hold fuglene indenfor skærmen
+    flock.y = Math.max(0, Math.min(canvas.height - flock.height, flock.y));
+
+    // Fortsæt animationen
+    if (gameRunning) requestAnimationFrame(updateGame);
+}
+
 });
